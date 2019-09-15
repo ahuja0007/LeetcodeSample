@@ -1,0 +1,17 @@
+This Problem was asked in Machine Coding round of Intuit for Data Engineer Profile. Aim was to check if candidate is able to write modular
+code with knowledge of concurrent libraries.
+
+Time Given - 90 Minutes
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+SIMULATING STREAM PROCESSING
+
+Write  a  multithreaded  program  consisting  of  3  stages  where  each  stage  is  represented by  a  thread.
+Write  the  program  in  such  way  that  stages  should  be  pluggable.  Stages should  perform  the  following  tasks.
+   ● Stage 1:  Should  reverse  the  input  String
+   ● Stage 2:  Should  Base64  encode  stage  1  output    (use  Base64.Encoder.encode() available  in  jdk)
+   ● Stage 3:  Should  persist  the  encoded  output  (stage  2  output)  in  a  file.
+
+The  program  should  read  input  from  a  file  and  supply  it  to  the  first  stage  in  streaming fashion  (to  simulate  streaming,
+you  can  use  Thread.sleep(1000)  after  each  input  line). Input  file  should  consist  of  Strings  separated  by  newline.

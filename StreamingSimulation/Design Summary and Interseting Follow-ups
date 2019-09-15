@@ -1,0 +1,67 @@
+Recently, the problems which involve the use of concurrent libraries and object oriented design principles/patterns have gained popularity. In this article, I am going
+to discuss the approach of one such problem which was asked in machine coding round for a Data Engineer Profile. The implementation and solution discussions will be heavily dependent on JAVA but
+you should be able to convert the implementation in your preferred object oriented language. Design principles, patterns and techniques used will be language agnostic.
+
+There are certain things to keep in my mind while implementing these type of problems. I will be explaining the below points in the context of the problem we are trying to solve :
+
+    ● Sketch the High Level Classes from the Description -
+
+       This should be the starting point of any problem. From the description/discussion, think of all the major classes
+       that could be the part of final solution. There could be some changes in the design while implementing which is fine. For current problem, we are trying to simulate a
+       streaming pipeline in which each stage being represented as a Thread should be able to process an incoming message from one of the stages and then feed the processed result
+       to the next stage. There should be a class to encapsulate the incoming and the processed message from the stages. Another class to represent processing of each stage and finally, a
+       class to link all these stages up. You can find the related classes in the implementation.
+
+    ● Code For the Future -
+
+       This is a very important step. This is where your code will be judged if it can handle any future changes which are hidden in the problem description. Always think of all the changes that
+       could come in the form of requirements in future and how would your sketched classes behave. Aim should be to incorporate all the changes with minimal code changes in the existing code.
+       That's where all the design principles and patterns come in handy. These things generally comes with experience when you have reviewed a lot of industry level code. If you have'nt, don't
+       worry because we are going to solve a lot of problems in this domain. After going through 3-4 problems, your mind will start developing patterns same as you would do in case of learning
+       a new DS/Algorithm. Here are the things which I have used to make this code defensive to realistic future requirements:
+
+                ● Generics -
+
+                From the problem statement, it is clear that the stages are processing only strings for now. What if in future we want to process with integers or even complex objects. That's why
+                the Request Class in the implementation is using one of the powerful features from the language i.e Generics. This should take care of this requirement.
+
+                ● Interfaces -
+
+                Interfaces will help us to add a new implementation of a stage in future, if any. This is one of the important requirement that stages should be pluggable. You should be able to
+                add more stages in future just by implementing the interface, without touching any existing stages. Designing methods inside interfaces also comes with experience. For the current
+                problem, there are 2 things which every stage should have. Init method for some pre-processing stuff and the actual processing method. Look at the implementation for more details.
+
+                ● Blocking Queues -
+
+                One hidden detail is that number of messages processed by each stage could be different as that would depend upon the kind of processing each stage is doing internally. We have to
+                introduce some kind of buffering between the stages so that a stage should not overwhelm its next immediate stage. For this, we have used Blocking queues here. It's going to be a communication
+                mechanism between stages which are represented as Threads. Other implementation could be to block the stage until next stage has processed the previous message but that would be highly
+                inefficient and the stage with heavy processing would become a bottleneck for previous stages.
+
+                ● GraceFul Termination -
+
+                Since it's a bounded stream (from a file), we need to make sure we terminate all the threads properly. I have used NULL pass-through signal to terminate each of the threads
+                in the pipeline. Though it is not written anywhere what you should do after processing all the strings from the file, you can really impress your interviewer by gracefully
+                terminating the pipeline automatically once the strings from the file are exhausted. If you don't do this, your JVM won't exit.
+
+                ● Separation of Concerns -
+
+                Always design classes in such a way that they are responsible for fulfilling only one responsibility. The reason being, in case there are some additional
+                requirements in the future, there should be minimal set of classes which should change. There should not be tight dependencies between classes which will cause
+                rippling effect and lot of classes would have to change. In our example, all the logic for setting up the order of stages is present in SimulatePipeline class.
+
+                ● Project Lombok -
+
+                I have used various annotations in the classes to avoid a lot of boiler-plate code. This library is heavily used in industry and if you are not aware, please read it out from the
+                web. It's very simple.
+
+
+You will be able to see all the ideas I have discussed above in the implementation. Always try to think what can change in future and where you can improve my code. I may have intentionally left
+some gaps in the implementation so that readers can do below mentioned interesting follow-ups:
+
+    ● How would you add error handling in the current code? What if any one of the stages failed in between? We need a Robust Pipeline i.e one processing failure should not stop the entire pipeline.
+    ● What if we have multiple input files which needs to be read in parallel? Hint: Might need to increase consumer stage threads as well for high throughput.
+    ● How about adding more stages? What will be the changes? Try to come up with a creative stage and stitch that stage in current scenario.
+
+We are going to follow similar pattern in future problems as well. Object Oriented implementation of systems with complete thought process and finally some follow-up exercises in the end so that
+you can start developing patterns quickly. OOD is really an art which comes with practise and experience.

@@ -1,0 +1,74 @@
+Design a parking lot which should be able to park different types of vehicles such as Bikes, cars etc.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+This question is very popular and could go into different directions depending upon what your interviewer has in its mind. I will try to 
+incorporate various features that could be asked and will try to design a extensible parking lot. Let's try to address few questions
+before we get into the solution.
+
+Is it an open space or a multi-storey building ? -> Let's Design a multi-storey parking Lot.
+
+How are you going to manage different vehicles ? -> Different spots for each vehice based on size. Each storey will be dedicated for a
+particular type of vehicle for now.
+
+Parking time constraints ? -> Open 24/7. Vehicle can be parked for many days.
+
+What should be the pricing strategy ? -> It should be a function of duration of parking and the spot size. Small sized vehicles can be
+promoted to larger spots in case of unavailability of spots on a floor. Charges will be based on the spot size and not the vehicle size.
+Priority should be to find a best match first i.e a Bike should not be placed in a larger spot if a small sized spot is available.
+Pricing strategy should be flexible in the sense that it can be changed in future.
+
+How are you going to handle the pricing ? Physical ticket will be provided to each vehicle based on the availability of spots.
+
+Keep in mind that after dicussion with your interviewer, there could be many changes to the above mentioned assumptioms.
+Don't assume anythng in interview. Always ask or suggest the feature/assumption to your interviewer before you code.
+
+Let's try to follow similar approach like we followed in the previous simulation problem.
+
+● Sketching High Level Classes - 
+  
+  Key components for classes of a parking lot inludes a Spot, Spot Address, Parking Ticket, Vehicle etc. There should be a class which should
+  handle the responsibilty of calculating parking fees from a parking ticket, a class which handles how the spots are structured in each
+  of the storeys of a lot, and finally a class for encapsulating the functioning of a parking lot.
+  Each parking lot should be able to park a vehicle and assign a parking ticket, display the stats for each storey, free the parking spot
+  when a vehicle exits the lot etc. Each floor should encapsulate all the knowledge of free and occupied spots. It's important to always
+  keep separating the the concerns/responsibilties in respective classes. Each class should not know much, otherwise it would be fragile.
+  
+● Code for the future - 
+ 
+  Let's discuss some of features in parking lot that could be challanged in future and how this solution aims to tackle all of them.
+  
+  - Flexible Pricing strategy : Let's say we want to have a completely different pricing strategy than what i have provided here. To handle
+    this requirement, i have used Strategy Design pattern. We can inject different pricing strategy in parking lot dynamically by implementing 
+    IParkingFeeStrategy interface. Please read about this pattern if you are not aware of it.
+    
+  - Flexible Floor Structuring : For now, we are binding a floor to a particular spot i.e floor is a collection of homoegeneous spots as of now.
+    In future, we might want to have a heterogeneous collection of spots on a particular floor. I have used Abstract factory pattern here for this change.
+    Each IParkingLotFloorBuilder implementation should be able to provide different floor structure (how slots are organised on a floor)
+    for a parking lot. MultiStoreyParkingLotImpl has a initializeParkingLot() function which is encapsulating all the logic of buildng
+    floors taking the help of IParkingLotFloorBuilder.
+    
+  - Seggregating API in Parking Lot : There are certain set of actions which a vehicle should not be allowed to call in the MultiStoreyParkingLotImpl.
+    IParkingLotManagement interface contains all the actions which will be called by the management on MultiStoreyParkingLotImpl.
+    IParkingLotUser interface contains all the actions which will be called by a vehicle on MultiStoreyParkingLotImpl.
+    Any Parking Lot Implementation should implement these 2 interfaces. MultiStoreyParkingLotImpl is the core class to encapsulate the
+    actions of a paking lot. In case you wanna have a different type of parking lot, just implement these 2 interaces. Read out Interface
+    Seggregaion principle if you are not aware.
+    
+● Algorithm to find a Best Match for a Vehice : I have organized the floors in increasing order of size of spots i.e first there would be
+  few levels having only small spots, then levels having medium sized spots and so on. In order to find a best match, always start from the
+  bottom level and then go up if you are not able to find spots in a particular level. By doing this, we are making sure that a vehicle
+  won't unnecessarily pay for a larger spot when it could have been placed at a non occupied smaller spot.
+    
+ # Interesting Follow-Ups to be Implemented by readers
+ 
+ If you think you have got the gist of the implementation provided, try implementing the following points !
+ 
+ ● Adding heterogeneous floors to this multi-storey parking lot.
+ ● Publish the total sales for the parking lot on any particular Day.
+ ● How would you provide a ticket in case a vehicle has lost it ?
+ ● Let's say our parking lot is a Huge Success. How can you scale it to multiple buildings ? This is going to be a difficult one as now
+   you can think of each building as a separate thread. You can introduce concurrency related stuff if you want a nice implementation.
+   
+Note : The aim of these exercises is to show you how to write an extensible and modular code. There might be some implementation bugs as i 
+have not done any unit testing on the implementation but that is not the aim. Feel free to rectify the mistakes if there are any.
